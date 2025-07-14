@@ -1,0 +1,9 @@
+from core import string
+
+print s = __print_string s
+println s = print (string.concat s "\n")
+input prompt =
+    _ = print prompt in
+    s = __read_line in
+    _ = println ""
+panic msg = __panic msg
