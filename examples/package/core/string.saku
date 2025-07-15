@@ -1,4 +1,0 @@
-to_int s = __string_to_int s
-from_int n = __int_to_string n
-concat s1 s2 = __string_concat s1 s2
-length s = __string_length s

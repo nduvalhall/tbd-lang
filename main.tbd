@@ -1,0 +1,18 @@
+import io
+import int
+import string
+
+
+factorial n =
+    aux n acc =
+        match n with
+        | 0 -> acc
+        | k -> match int.gt k 0 with
+            | true -> aux (int.sub k 1) (int.mul n acc)
+            | false -> io.panic "negative input"
+    in
+    aux n 1
+
+_ =
+    n = io.input "factorial n: " in
+    io.print_line (string.from_int (factorial n))

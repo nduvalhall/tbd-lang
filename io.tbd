@@ -1,0 +1,4 @@
+import string
+
+external print s = Stdlib.print_string s
+print_line s = string.concat s "\n"

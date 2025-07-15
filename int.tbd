@@ -1,0 +1,4 @@
+external sub x y = Stdlib.Int.sub x y
+external mul x y = Stdlib.Int.mul x y
+external compare x y = Stdlib.compare x y
+gt x y = match compare x y with 1 -> true | _ -> false
