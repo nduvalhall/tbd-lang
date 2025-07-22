@@ -1,2 +1,0 @@
-external from_int s = string_of_int s
-external concat s1 s2 = s1 ^ s2
