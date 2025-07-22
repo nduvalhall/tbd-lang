@@ -1,4 +1,21 @@
 import string
+import comptime
+import int
 
-external print s = Stdlib.print_string s
-print_line s = string.concat s "\n"
+
+external _print_string s = Stdlib.print_string s
+external _read_line () = Stdlib.read_line ()
+
+print s = string.concat s "\n"
+input prompt =
+    _ = print prompt in
+    _read_line ()
+
+
+
+comptime print a =
+    t = comptime.get_type a in
+    match t with
+    | comptime.type.string -> print a
+    | comptime.type.int -> print (string.from_int a)
+    | comptime.type.float -> print (string.from_float a)
