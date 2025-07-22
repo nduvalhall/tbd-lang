@@ -1,0 +1,36 @@
+import tbd.array
+import tbd.char
+import tbd.file
+import tbd.io
+import tbd.math
+import tbd.string
+
+
+fun get_random_word filepath =
+  let words = file.read_lines filepath |> array.from_list in
+  let index = math.random_int 0 (array.length words) in
+  match array.get index words with
+  | Ok word -> word
+  | Error s -> panic s
+
+
+fun rec run_game word chances left =
+  match chances with
+  | 0 ->
+    (match list.length left with
+    | 0 -> Some ()
+    | _ -> None)
+  | n ->
+    let guess = io.read_line () |> char.from_string in
+    let left = list.filter (fun c -> char.neq c guess) left in
+    run_game word (chances - 1) left
+
+
+fun main () =
+  let filepath = "hangman_words.txt" in
+  let word = get_random_word filepath in
+  let chances = 10 in
+  let left = string.to_list word in
+  match run_game word chances left with
+  | Some () -> io.print_line "You won!"
+  | None -> io.print_line "You lost..."
