@@ -6,8 +6,8 @@ import tbd.Math
 import tbd.String
 
 
-type Result 'a 'b = Ok of 'a | Error of 'b
-type Option 'a = Some of 'a | None
+type Result 'a 'b = Ok of 'a | Error of 'b  # these are primatives in reality
+type Option 'a = Some of 'a | None          #
 
 type Person = { name : string, surname : string; age : int }
 type Dog = { name : string, good_boy : bool }
@@ -22,7 +22,13 @@ val procreate :
     { name : string, surname : string, ... } ->
     string -> Person
 """
-procreate mother father name = Person { name, surname = mother.surname, age = 0 }
+procreate mother father name = {
+    Person { 
+        name, 
+        surname = mother.surname, 
+        age = 0
+    }
+}
 
 """
 module List : sig
@@ -33,25 +39,35 @@ end
 """
 module List = {
     # val fold : (a' -> b' -> a') -> a' -> b' list -> a'
-    fold f acc l = match l {
-        [] -> acc
+    fold f acc l = match l with {
+        [] -> acc,
         hd :: tl -> fold f (f acc hd) tl
     }
 
     reverse l = {
         aux l' acc = match l' {
-            [] -> acc
+            [] -> acc,
             hd :: tl -> aux tl (hd :: acc)
         };
         aux l []
     }
 
+    empty () = []
+
+    make f size = {
+        aux i acc = match i {
+            0 -> reverse acc,
+            n -> aux (n - 1) (f n :: acc)
+        };
+        aux size []
+    }
+
     # val filter : ('a -> bool) -> a' list -> a' list
     filter f l = {
         aux l' acc = match l' {
-            [] -> reverse acc
+            [] -> reverse acc,
             hd :: tl -> match f hd {
-                true -> aux tl (hd :: acc)
+                true -> aux tl (hd :: acc),
                 false -> aux tl acc
             }
         };
@@ -71,8 +87,8 @@ get_random_word filepath = {
 	words = File.read_lines filepath |> Array.from_list;
 	index = Math.random_int 0 (Array.length words);
 	match Array.get index words {
-		Result.Ok word -> word
-		Result.Error s -> Io.panic s
+		Ok word -> word,
+		Error s -> Io.panic s
    }
 }
 
@@ -81,12 +97,12 @@ get_random_word filepath = {
 run_game chances left = {
 	match chances {
 		0 -> match List.length left {
-            0 -> Option.Some ()
-            _ -> Option.None
-        }
+            0 -> Some (),
+            _ -> None
+        },
 		n -> {
 			guess = Io.read_line () |> Char.from_string;
-			left = List.filter (fun c -> Char.neq c guess) left;
+			left = List.filter (c -> Char.neq c guess) left;
 			run_game (chances - 1) left
         }
     }
@@ -98,7 +114,7 @@ main () = {
 	chances = 10;
 	left = String.to_chars (get_random_word filepath);
 	match run_game chances left {
-		Option.Some () -> Io.print_line "You won!"
-		Option.None -> Io.print_line "You lost..."
+		Some () -> Io.print_line "You won!",
+		None -> Io.print_line "You lost..."
     }
 }

@@ -148,4 +148,10 @@ l' = match l {
 
 # val rotate : int * int * int -> int * int * int
 rotate (x, y, z) = (y, z, x)
+
+x = Some 12;
+y = match x {
+    Some n -> n
+    None -> 0
+}
 ```
