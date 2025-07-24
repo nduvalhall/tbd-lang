@@ -1,36 +1,104 @@
-import tbd.array
-import tbd.char
-import tbd.file
-import tbd.io
-import tbd.math
-import tbd.string
+import tbd.Array
+import tbd.Char
+import tbd.File
+import tbd.Io
+import tbd.Math
+import tbd.String
 
 
-fun get_random_word filepath =
-  let words = file.read_lines filepath |> array.from_list in
-  let index = math.random_int 0 (array.length words) in
-  match array.get index words with
-  | Ok word -> word
-  | Error s -> panic s
+type Result 'a 'b = Ok of 'a | Error of 'b
+type Option 'a = Some of 'a | None
+
+type Person = { name : string, surname : string; age : int }
+type Dog = { name : string, good_boy : bool }
 
 
-fun rec run_game word chances left =
-  match chances with
-  | 0 ->
-    (match list.length left with
-    | 0 -> Some ()
-    | _ -> None)
-  | n ->
-    let guess = io.read_line () |> char.from_string in
-    let left = list.filter (fun c -> char.neq c guess) left in
-    run_game word (chances - 1) left
+# val greet : { name : string, ... }  -> unit
+greet entity = Io.print_line entity.name
+
+"""
+val procreate : 
+    { name : string, surname : string, ... } ->
+    { name : string, surname : string, ... } ->
+    string -> Person
+"""
+procreate mother father name = Person { name, surname = mother.surname, age = 0 }
+
+"""
+module List : sig
+    val fold : (a' -> b' -> a') -> a' -> b' list -> a'
+    val sum : (a' -> b' -> a') -> a' -> b' list -> a'
+    val length : a' list -> int
+end
+"""
+module List = {
+    # val fold : (a' -> b' -> a') -> a' -> b' list -> a'
+    fold f acc l = match l {
+        [] -> acc
+        hd :: tl -> fold f (f acc hd) tl
+    }
+
+    reverse l = {
+        aux l' acc = match l' {
+            [] -> acc
+            hd :: tl -> aux tl (hd :: acc)
+        };
+        aux l []
+    }
+
+    # val filter : ('a -> bool) -> a' list -> a' list
+    filter f l = {
+        aux l' acc = match l' {
+            [] -> reverse acc
+            hd :: tl -> match f hd {
+                true -> aux tl (hd :: acc)
+                false -> aux tl acc
+            }
+        };
+        aux l []
+    }
+
+    # val sum : (a' -> b' -> a') -> a' -> b' list -> a'
+    sum f zero l = fold f zero l
+    
+    # val length : a' list -> int
+    length l = fold (len _ -> len + 1) 0 l
+}
 
 
-fun main () =
-  let filepath = "hangman_words.txt" in
-  let word = get_random_word filepath in
-  let chances = 10 in
-  let left = string.to_list word in
-  match run_game word chances left with
-  | Some () -> io.print_line "You won!"
-  | None -> io.print_line "You lost..."
+# val get_random_word : string -> string
+get_random_word filepath = {
+	words = File.read_lines filepath |> Array.from_list;
+	index = Math.random_int 0 (Array.length words);
+	match Array.get index words {
+		Result.Ok word -> word
+		Result.Error s -> Io.panic s
+   }
+}
+
+
+# val run_game : int -> char list -> unit Option
+run_game chances left = {
+	match chances {
+		0 -> match List.length left {
+            0 -> Option.Some ()
+            _ -> Option.None
+        }
+		n -> {
+			guess = Io.read_line () |> Char.from_string;
+			left = List.filter (fun c -> Char.neq c guess) left;
+			run_game (chances - 1) left
+        }
+    }
+}
+
+# val main : unit -> unit
+main () = {
+	filepath = "hangman_words.txt";
+	chances = 10;
+	left = String.to_chars (get_random_word filepath);
+	match run_game chances left {
+		Option.Some () -> Io.print_line "You won!"
+		Option.None -> Io.print_line "You lost..."
+    }
+}
