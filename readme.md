@@ -117,11 +117,6 @@ f x = x;
 x = 1;
 y = 2;
 
-z = if x > y {
-    x
-} else {
-    y
-};
 
 z = match x > y {
     true -> x

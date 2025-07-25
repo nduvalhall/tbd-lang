@@ -1,20 +1,20 @@
-import tbd.Array
-import tbd.Char
-import tbd.File
-import tbd.Io
-import tbd.Math
-import tbd.String
+import tbd.array
+import tbd.char
+import tbd.file
+import tbd.io
+import tbd.match
+import tbd.string
 
 
-type Result 'a 'b = Ok of 'a | Error of 'b  # these are primatives in reality
-type Option 'a = Some of 'a | None          #
+type Result 'a 'b = Ok of 'a | Error of 'b;  # these are primatives in reality
+type Option 'a = Some of 'a | None;          #
 
-type Person = { name : string, surname : string; age : int }
-type Dog = { name : string, good_boy : bool }
+type Person = { name : string, surname : string; age : int };
+type Dog = { name : string, good_boy : bool };
 
 
 # val greet : { name : string, ... }  -> unit
-greet entity = Io.print_line entity.name
+greet entity = io.print_line entity.name;
 
 """
 val procreate : 
@@ -28,7 +28,7 @@ procreate mother father name = {
         surname = mother.surname, 
         age = 0
     }
-}
+};
 
 """
 module List : sig
@@ -41,8 +41,17 @@ module List = {
     # val fold : (a' -> b' -> a') -> a' -> b' list -> a'
     fold f acc l = match l with {
         [] -> acc,
-        hd :: tl -> fold f (f acc hd) tl
-    }
+        hd :: _ -> fold f (f acc hd)
+    };
+
+    test a b = {};
+
+    fold f acc l = {
+        match l with {
+            [] -> acc,
+            hd :: tl -> fold f (f acc hd) tl
+        }
+    };
 
     reverse l = {
         aux l' acc = match l' {
@@ -50,9 +59,9 @@ module List = {
             hd :: tl -> aux tl (hd :: acc)
         };
         aux l []
-    }
+    };
 
-    empty () = []
+    empty () = [];
 
     make f size = {
         aux i acc = match i {
@@ -60,7 +69,7 @@ module List = {
             n -> aux (n - 1) (f n :: acc)
         };
         aux size []
-    }
+    };
 
     # val filter : ('a -> bool) -> a' list -> a' list
     filter f l = {
@@ -72,25 +81,25 @@ module List = {
             }
         };
         aux l []
-    }
+    };
 
     # val sum : (a' -> b' -> a') -> a' -> b' list -> a'
-    sum f zero l = fold f zero l
+    sum f zero l = fold f zero l;
     
     # val length : a' list -> int
-    length l = fold (len _ -> len + 1) 0 l
-}
+    length l = fold (len _ -> len + 1) 0 l;
+};
 
 
 # val get_random_word : string -> string
 get_random_word filepath = {
-	words = File.read_lines filepath |> Array.from_list;
-	index = Math.random_int 0 (Array.length words);
-	match Array.get index words {
+	words = file.read_lines filepath |> array.from_list;
+	index = match.random_int 0 (array.length words);
+	match array.get index words {
 		Ok word -> word,
-		Error s -> Io.panic s
+		Error s -> io.panic s
    }
-}
+};
 
 
 # val run_game : int -> char list -> unit Option
@@ -101,20 +110,20 @@ run_game chances left = {
             _ -> None
         },
 		n -> {
-			guess = Io.read_line () |> Char.from_string;
-			left = List.filter (c -> Char.neq c guess) left;
+			guess = io.read_line () |> char.from_string;
+			left = List.filter (c -> char.neq c guess) left;
 			run_game (chances - 1) left
         }
     }
-}
+};
 
 # val main : unit -> unit
 main () = {
 	filepath = "hangman_words.txt";
 	chances = 10;
-	left = String.to_chars (get_random_word filepath);
+	left = string.to_chars (get_random_word filepath);
 	match run_game chances left {
-		Some () -> Io.print_line "You won!",
-		None -> Io.print_line "You lost..."
+		Some () -> io.print_line "You won!",
+		None -> io.print_line "You lost..."
     }
-}
+};
